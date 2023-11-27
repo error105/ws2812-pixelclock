@@ -1,0 +1,269 @@
+[
+    {
+        "id": "5eecce7383e330e7",
+        "type": "inject",
+        "z": "5092a5cb37d572ce",
+        "name": "PixelClock - 1min",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "aaa8fc54393037bb"
+            ]
+        ]
+    },
+    {
+        "id": "aaa8fc54393037bb",
+        "type": "function",
+        "z": "5092a5cb37d572ce",
+        "name": "Aktualna Godzina",
+        "func": "// Pobierz aktualną datę i godzinę\nvar now = new Date();\n\n// Uzyskaj godzinę i minuty w formacie HH:mm\nvar hours = now.getHours().toString().padStart(2, '0');\nvar minutes = now.getMinutes().toString().padStart(2, '0');\n\n// Utwórz formatowana godzinę\nvar formattedTime = hours + ':' + minutes;\n\n// Zwróć dane w odpowiednim formacie\nmsg.payload = {\n  data: {\n    text: formattedTime\n  }\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 140,
+        "wires": [
+            [
+                "4e779da96915e667"
+            ]
+        ]
+    },
+    {
+        "id": "4e779da96915e667",
+        "type": "api-call-service",
+        "z": "5092a5cb37d572ce",
+        "name": "",
+        "server": "27907644848a8562",
+        "version": 5,
+        "debugenabled": false,
+        "domain": "rest_command",
+        "service": "wled_text",
+        "areaId": [],
+        "deviceId": [],
+        "entityId": [],
+        "data": "",
+        "dataType": "jsonata",
+        "mergeContext": "",
+        "mustacheAltTags": false,
+        "outputProperties": [],
+        "queue": "none",
+        "x": 790,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e29db3c1.f2e7f",
+        "type": "http request",
+        "z": "5092a5cb37d572ce",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.168.0.203/json/state",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 750,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "57b0f80dcfd0b7b7",
+        "type": "function",
+        "z": "5092a5cb37d572ce",
+        "name": "Ciemny",
+        "func": "var presetNumber = 4; // Zmiana numeru presetu według potrzeb\n\nmsg.payload = {\n    ps: presetNumber\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 200,
+        "wires": [
+            [
+                "e29db3c1.f2e7f"
+            ]
+        ]
+    },
+    {
+        "id": "8887af7149a55dab",
+        "type": "function",
+        "z": "5092a5cb37d572ce",
+        "name": "Jasny",
+        "func": "var presetNumber = 2; // Zmiana numeru presetu według potrzeb\n\nmsg.payload = {\n    ps: presetNumber\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 260,
+        "wires": [
+            [
+                "e29db3c1.f2e7f"
+            ]
+        ]
+    },
+    {
+        "id": "45931888528aa7f7",
+        "type": "server-state-changed",
+        "z": "5092a5cb37d572ce",
+        "name": "Dobranoc",
+        "server": "27907644848a8562",
+        "version": 5,
+        "outputs": 2,
+        "exposeAsEntityConfig": "",
+        "entityId": "input_boolean.goodnight",
+        "entityIdType": "exact",
+        "outputInitially": false,
+        "stateType": "str",
+        "ifState": "on",
+        "ifStateType": "str",
+        "ifStateOperator": "is",
+        "outputOnlyOnStateChange": true,
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "ignorePrevStateNull": false,
+        "ignorePrevStateUnknown": false,
+        "ignorePrevStateUnavailable": false,
+        "ignoreCurrentStateUnknown": false,
+        "ignoreCurrentStateUnavailable": false,
+        "outputProperties": [
+            {
+                "property": "payload",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            },
+            {
+                "property": "data",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "eventData"
+            },
+            {
+                "property": "topic",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "triggerId"
+            }
+        ],
+        "x": 120,
+        "y": 220,
+        "wires": [
+            [
+                "57b0f80dcfd0b7b7",
+                "aaa8fc54393037bb",
+                "68e5b60cd6810cad"
+            ],
+            [
+                "8887af7149a55dab",
+                "aaa8fc54393037bb"
+            ]
+        ]
+    },
+    {
+        "id": "68e5b60cd6810cad",
+        "type": "function",
+        "z": "5092a5cb37d572ce",
+        "name": "Jasność",
+        "func": "var presetNumber = 1; // Zmiana numeru presetu według potrzeb\n\nmsg.payload = {\n    bri: presetNumber\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 320,
+        "wires": [
+            [
+                "e29db3c1.f2e7f"
+            ]
+        ]
+    },
+    {
+        "id": "758eb0c7c006214d",
+        "type": "inject",
+        "z": "5092a5cb37d572ce",
+        "name": "TEST",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 320,
+        "wires": [
+            [
+                "68e5b60cd6810cad"
+            ]
+        ]
+    },
+    {
+        "id": "27907644848a8562",
+        "type": "server",
+        "name": "Home Assistant",
+        "version": 5,
+        "addon": false,
+        "rejectUnauthorizedCerts": true,
+        "ha_boolean": "y|yes|true|on|home|open",
+        "connectionDelay": true,
+        "cacheJson": true,
+        "heartbeat": false,
+        "heartbeatInterval": "30",
+        "areaSelector": "friendlyName",
+        "deviceSelector": "friendlyName",
+        "entitySelector": "friendlyName",
+        "statusSeparator": ": ",
+        "statusYear": "hidden",
+        "statusMonth": "short",
+        "statusDay": "numeric",
+        "statusHourCycle": "default",
+        "statusTimeFormat": "h:m",
+        "enableGlobalContextStore": false
+    }
+]
