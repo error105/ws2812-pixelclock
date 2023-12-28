@@ -1,8 +1,30 @@
 [
     {
+        "id": "e29db3c1.f2e7f",
+        "type": "http request",
+        "z": "a68cf5fe47562166",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.168.0.203/json/state",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 930,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "5eecce7383e330e7",
         "type": "inject",
-        "z": "5092a5cb37d572ce",
+        "z": "a68cf5fe47562166",
         "name": "PixelClock - 1min",
         "props": [
             {
@@ -20,131 +42,83 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 130,
-        "y": 140,
+        "x": 110,
+        "y": 20,
         "wires": [
             [
-                "aaa8fc54393037bb"
+                "aaa8fc54393037bb",
+                "74f768f8f60c30c4"
             ]
         ]
     },
     {
         "id": "aaa8fc54393037bb",
         "type": "function",
-        "z": "5092a5cb37d572ce",
+        "z": "a68cf5fe47562166",
         "name": "Aktualna Godzina",
-        "func": "// Pobierz aktualną datę i godzinę\nvar now = new Date();\n\n// Uzyskaj godzinę i minuty w formacie HH:mm\nvar hours = now.getHours().toString().padStart(2, '0');\nvar minutes = now.getMinutes().toString().padStart(2, '0');\n\n// Utwórz formatowana godzinę\nvar formattedTime = hours + ':' + minutes;\n\n// Zwróć dane w odpowiednim formacie\nmsg.payload = {\n  data: {\n    text: formattedTime\n  }\n};\n\nreturn msg;\n",
+        "func": "// Pobierz aktualną datę i godzinę\nvar now = new Date();\n\n// Uzyskaj godzinę i minuty w formacie HH:mm\nvar hours = now.getHours().toString().padStart(2, '0');\nvar minutes = now.getMinutes().toString().padStart(2, '0');\n\n// Utwórz formatowana godzinę\nvar formattedTime = hours + ':' + minutes;\n// Zwróć dane w odpowiednim formacie\nmsg.payload = {\n  data: {\n    text: formattedTime\n  }\n};\n\nflow.set(\"CurrentTime\", formattedTime);\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 430,
-        "y": 140,
+        "x": 350,
+        "y": 20,
         "wires": [
             [
-                "4e779da96915e667"
+                "613b615f14da8474"
             ]
         ]
     },
     {
-        "id": "4e779da96915e667",
-        "type": "api-call-service",
-        "z": "5092a5cb37d572ce",
-        "name": "",
-        "server": "27907644848a8562",
-        "version": 5,
-        "debugenabled": false,
-        "domain": "rest_command",
-        "service": "wled_text",
-        "areaId": [],
-        "deviceId": [],
-        "entityId": [],
-        "data": "",
-        "dataType": "jsonata",
-        "mergeContext": "",
-        "mustacheAltTags": false,
-        "outputProperties": [],
-        "queue": "none",
-        "x": 790,
-        "y": 140,
-        "wires": [
-            []
-        ]
+        "id": "c8f655e5cf265d1f",
+        "type": "mqtt out",
+        "z": "a68cf5fe47562166",
+        "name": "Czas",
+        "topic": "PixelClock/time",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ecbb6e3a7cecc487",
+        "x": 810,
+        "y": 20,
+        "wires": []
     },
     {
-        "id": "e29db3c1.f2e7f",
-        "type": "http request",
-        "z": "5092a5cb37d572ce",
-        "name": "",
-        "method": "POST",
-        "ret": "obj",
-        "paytoqs": "ignore",
-        "url": "http://192.168.0.203/json/state",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 750,
-        "y": 200,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "57b0f80dcfd0b7b7",
+        "id": "613b615f14da8474",
         "type": "function",
-        "z": "5092a5cb37d572ce",
-        "name": "Ciemny",
-        "func": "var presetNumber = 4; // Zmiana numeru presetu według potrzeb\n\nmsg.payload = {\n    ps: presetNumber\n};\n\nreturn msg;\n",
+        "z": "a68cf5fe47562166",
+        "name": "Wyslij przez MQTT",
+        "func": "// W przykładowej funkcji pobieramy zawartość pola \"text\" z przekazanego obiektu JSON\nvar jsonInput = msg.payload; // Pobieramy obiekt JSON z wejścia\n\nif (jsonInput && jsonInput.data && jsonInput.data.text) {\n    // Jeżeli obiekt zawiera pole \"data\" oraz pole \"text\", to zwracamy zawartość pola \"text\"\n    msg.payload = jsonInput.data.text;\n} else {\n    // Jeżeli któryś z wymaganych kluczy nie istnieje, zwracamy pusty ciąg znaków\n    msg.payload = \"Błąd\";\n}\n\nreturn msg; // Zwracamy wiadomość, którą można przekazać dalej w przepływie\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 460,
-        "y": 200,
+        "x": 590,
+        "y": 20,
         "wires": [
             [
-                "e29db3c1.f2e7f"
+                "c8f655e5cf265d1f"
             ]
         ]
     },
     {
-        "id": "8887af7149a55dab",
-        "type": "function",
-        "z": "5092a5cb37d572ce",
-        "name": "Jasny",
-        "func": "var presetNumber = 2; // Zmiana numeru presetu według potrzeb\n\nmsg.payload = {\n    ps: presetNumber\n};\n\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 450,
-        "y": 260,
-        "wires": [
-            [
-                "e29db3c1.f2e7f"
-            ]
-        ]
-    },
-    {
-        "id": "45931888528aa7f7",
+        "id": "adab77d2ed3ca6e5",
         "type": "server-state-changed",
-        "z": "5092a5cb37d572ce",
-        "name": "Dobranoc",
+        "z": "a68cf5fe47562166",
+        "name": "Czujnik Ruchu Gabinet",
         "server": "27907644848a8562",
         "version": 5,
         "outputs": 2,
         "exposeAsEntityConfig": "",
-        "entityId": "input_boolean.goodnight",
+        "entityId": "binary_sensor.gabinet_ruch_occupancy",
         "entityIdType": "exact",
         "outputInitially": false,
         "stateType": "str",
@@ -180,68 +154,395 @@
                 "valueType": "triggerId"
             }
         ],
-        "x": 120,
-        "y": 220,
+        "x": 100,
+        "y": 200,
         "wires": [
             [
-                "57b0f80dcfd0b7b7",
-                "aaa8fc54393037bb",
-                "68e5b60cd6810cad"
+                "2fbce360ab6dd7ed"
             ],
             [
-                "8887af7149a55dab",
-                "aaa8fc54393037bb"
+                "af6427f210d55f90"
             ]
         ]
     },
     {
-        "id": "68e5b60cd6810cad",
+        "id": "2fbce360ab6dd7ed",
+        "type": "api-current-state",
+        "z": "a68cf5fe47562166",
+        "name": "GoodNight",
+        "server": "27907644848a8562",
+        "version": 3,
+        "outputs": 2,
+        "halt_if": "off",
+        "halt_if_type": "str",
+        "halt_if_compare": "is",
+        "entity_id": "input_boolean.goodnight",
+        "state_type": "str",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "payload",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            },
+            {
+                "property": "data",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entity"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 370,
+        "y": 180,
+        "wires": [
+            [
+                "1152e4be4da030e7"
+            ],
+            [
+                "77ad646c6b7f31d4"
+            ]
+        ]
+    },
+    {
+        "id": "9aac9e65d1c27f37",
         "type": "function",
-        "z": "5092a5cb37d572ce",
-        "name": "Jasność",
-        "func": "var presetNumber = 1; // Zmiana numeru presetu według potrzeb\n\nmsg.payload = {\n    bri: presetNumber\n};\n\nreturn msg;\n",
+        "z": "a68cf5fe47562166",
+        "name": "Wyłacz",
+        "func": "msg.payload = {\n    on : false\n};\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 460,
-        "y": 320,
+        "x": 560,
+        "y": 280,
         "wires": [
             [
-                "e29db3c1.f2e7f"
+                "85bd20aebb7534e9"
             ]
         ]
     },
     {
-        "id": "758eb0c7c006214d",
-        "type": "inject",
-        "z": "5092a5cb37d572ce",
-        "name": "TEST",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 170,
-        "y": 320,
+        "id": "77ad646c6b7f31d4",
+        "type": "function",
+        "z": "a68cf5fe47562166",
+        "name": "Motyw Jasny",
+        "func": "var presetNumber = 2; // Zmiana numeru presetu według potrzeb\nvar aktualnyczas = flow.get(\"CurrentTime\");\n\nmsg.payload = {\n    on : true,\n    ps: presetNumber,\n    seg: [\n        {\n            id: 0,\n            n: aktualnyczas\n        },\n    ]\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 200,
         "wires": [
             [
-                "68e5b60cd6810cad"
+                "85bd20aebb7534e9"
             ]
         ]
+    },
+    {
+        "id": "af6427f210d55f90",
+        "type": "delay",
+        "z": "a68cf5fe47562166",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "45",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 360,
+        "y": 240,
+        "wires": [
+            [
+                "9aac9e65d1c27f37"
+            ]
+        ]
+    },
+    {
+        "id": "1e4f71cb31e752e0",
+        "type": "function",
+        "z": "a68cf5fe47562166",
+        "name": "Wyslij Czas",
+        "func": "var aktualnyczas = flow.get(\"CurrentTime\");\n\nmsg.payload = {\n    seg: [\n        {\n            id: 0,\n            n: aktualnyczas\n        },\n    ]\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 80,
+        "wires": [
+            [
+                "85bd20aebb7534e9"
+            ]
+        ]
+    },
+    {
+        "id": "74f768f8f60c30c4",
+        "type": "delay",
+        "z": "a68cf5fe47562166",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 290,
+        "y": 80,
+        "wires": [
+            [
+                "1e4f71cb31e752e0"
+            ]
+        ]
+    },
+    {
+        "id": "73e262d6f26c81b7",
+        "type": "sun-event-inject",
+        "z": "a68cf5fe47562166",
+        "name": "Wschód Słońca",
+        "latitude": "52.027458",
+        "longitude": "21.036699",
+        "event": "sunrise",
+        "offset": "0",
+        "injectEventTimesAfterStartup": false,
+        "x": 120,
+        "y": 400,
+        "wires": [
+            [
+                "7f2091f706a9f869"
+            ]
+        ]
+    },
+    {
+        "id": "4bb9e0d96bdab5b6",
+        "type": "sun-event-inject",
+        "z": "a68cf5fe47562166",
+        "name": "Zachód Słońca",
+        "latitude": "52.027458",
+        "longitude": "21.036699",
+        "event": "sunsetStart",
+        "offset": "0",
+        "injectEventTimesAfterStartup": false,
+        "x": 120,
+        "y": 460,
+        "wires": [
+            [
+                "0c53f06fce0fad93"
+            ]
+        ]
+    },
+    {
+        "id": "0c53f06fce0fad93",
+        "type": "function",
+        "z": "a68cf5fe47562166",
+        "name": "Ściemniam",
+        "func": "// Początkowa i końcowa wartość\nconst startValue = 150;\nconst endValue = 2;\n\n// Czas trwania animacji w sekundach\n//const animationDuration = 60; // 60 sekund\nconst animationDuration = 2000; // 30 minut\n\n// Częstotliwość generowania nowej wartości (co ile milisekund)\nconst updateInterval = 30000; // co 60 razy na sekundę\n\n// Liczba kroków interpolacji\nconst steps = animationDuration * 60; // 60 kroków na sekundę przez 60 sekund\n\n// Zmienna do przechowywania aktualnego kroku interpolacji\nlet currentStep = 0;\n\n// Zmienna do przechowywania interwału\nlet intervalId;\n\n// Zmienna do przechowywania stanu odliczania\nlet odliczanieTrwa = false;\n\n// Funkcja generująca płynne wartości\nfunction generateSmoothValues() {\n    // Jeśli odliczanie trwa, nie generuj nowych wartości\n    if (odliczanieTrwa) {\n        return;\n    }\n\n    // Obliczanie nowej wartości przy użyciu interpolacji liniowej\n    const progress = currentStep / steps;\n    const valueDifference = endValue - startValue;\n    const interpolatedValue = startValue + progress * valueDifference;\n\n    // Zaokrąglanie wartości w dół do najbliższej liczby całkowitej\n    const currentValue = Math.floor(interpolatedValue);\n\n    // Wysyłanie wartości do wyjścia\n    node.send({ payload: currentValue });\n\n    // Sprawdzenie warunku zakończenia animacji\n    if (currentStep >= steps) {\n        // Zakończ animację\n        clearInterval(intervalId);\n    }\n\n    // Zwiększenie aktualnego kroku\n    currentStep++;\n}\n\n// Funkcja obsługująca zdarzenie kliknięcia Inject\nfunction onClickInject() {\n    // Jeśli odliczanie trwa, nie uruchamiaj nowej animacji\n    if (odliczanieTrwa) {\n        return;\n    }\n\n    // Zakończ poprzednią animację, jeśli istnieje\n    clearInterval(intervalId);\n\n    // Zresetuj wszystkie wartości do stanu początkowego\n    currentStep = 0;\n\n    // Ustaw flagę odliczania\n    odliczanieTrwa = true;\n\n    // Ustawienie interwału do generowania wartości\n    intervalId = setInterval(() => {\n        generateSmoothValues();\n\n        // Sprawdzenie warunku zakończenia animacji\n        if (currentStep >= steps) {\n            // Zakończ animację\n            clearInterval(intervalId);\n\n            // Zresetuj flagę odliczania\n            odliczanieTrwa = false;\n        }\n    }, updateInterval);\n}\n\n// Ustawienie interwału do generowania wartości\nintervalId = setInterval(generateSmoothValues, updateInterval);\n\n// Zarejestrowanie funkcji obsługującej kliknięcie Inject\nmsg.on('input', onClickInject);\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 460,
+        "wires": [
+            [
+                "ba9370184dad581a"
+            ]
+        ]
+    },
+    {
+        "id": "7f2091f706a9f869",
+        "type": "function",
+        "z": "a68cf5fe47562166",
+        "name": "Rozjaśniam",
+        "func": "// Początkowa i końcowa wartość\nconst startValue = 2;\nconst endValue = 150;\n\n// Czas trwania animacji w minutach\nconst animationDuration = 30 * 60; // 30 minut w sekundach\n\n// Częstotliwość generowania nowej wartości (co ile milisekund)\nconst updateInterval = 1000 / 60; // co 60 razy na sekundę\n\n// Liczba kroków interpolacji\nconst steps = animationDuration * 60; // 60 kroków na sekundę przez 60 sekund\n\n// Zmienna do przechowywania aktualnego kroku interpolacji\nlet currentStep = 0;\n\n// Zmienna do przechowywania interwału\nlet intervalId;\n\n// Zmienna do przechowywania stanu odliczania\nlet odliczanieTrwa = false;\n\n// Funkcja generująca płynne wartości\nfunction generateSmoothValues() {\n    // Jeśli odliczanie trwa, nie generuj nowych wartości\n    if (odliczanieTrwa) {\n        return;\n    }\n\n    // Obliczanie nowej wartości przy użyciu interpolacji liniowej\n    const progress = currentStep / steps;\n    const valueDifference = endValue - startValue;\n    const interpolatedValue = startValue + progress * valueDifference;\n\n    // Zaokrąglanie wartości w dół do najbliższej liczby całkowitej\n    const currentValue = Math.floor(interpolatedValue);\n\n    // Wysyłanie wartości do wyjścia\n    node.send({ payload: currentValue });\n\n    // Sprawdzenie warunku zakończenia animacji\n    if (currentStep >= steps) {\n        // Zakończ animację\n        clearInterval(intervalId);\n    }\n\n    // Zwiększenie aktualnego kroku\n    currentStep++;\n}\n\n// Funkcja obsługująca zdarzenie kliknięcia Inject\nfunction onClickInject() {\n    // Jeśli odliczanie trwa, nie uruchamiaj nowej animacji\n    if (odliczanieTrwa) {\n        return;\n    }\n\n    // Zakończ poprzednią animację, jeśli istnieje\n    clearInterval(intervalId);\n\n    // Zresetuj wszystkie wartości do stanu początkowego\n    currentStep = 0;\n\n    // Ustaw flagę odliczania\n    odliczanieTrwa = true;\n\n    // Ustawienie interwału do generowania wartości\n    intervalId = setInterval(() => {\n        generateSmoothValues();\n\n        // Sprawdzenie warunku zakończenia animacji\n        if (currentStep >= steps) {\n            // Zakończ animację\n            clearInterval(intervalId);\n\n            // Zresetuj flagę odliczania\n            odliczanieTrwa = false;\n        }\n    }, updateInterval);\n}\n\n// Ustawienie interwału do generowania wartości\nintervalId = setInterval(generateSmoothValues, updateInterval);\n\n// Zarejestrowanie funkcji obsługującej kliknięcie Inject\nmsg.on('input', onClickInject);\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 400,
+        "wires": [
+            [
+                "ba9370184dad581a"
+            ]
+        ]
+    },
+    {
+        "id": "ba9370184dad581a",
+        "type": "api-current-state",
+        "z": "a68cf5fe47562166",
+        "name": "GoodNight",
+        "server": "27907644848a8562",
+        "version": 3,
+        "outputs": 2,
+        "halt_if": "on",
+        "halt_if_type": "str",
+        "halt_if_compare": "is",
+        "entity_id": "input_boolean.goodnight",
+        "state_type": "str",
+        "blockInputOverrides": false,
+        "outputProperties": [
+            {
+                "property": "msg",
+                "propertyType": "flow",
+                "value": "",
+                "valueType": "num"
+            }
+        ],
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "override_topic": false,
+        "state_location": "payload",
+        "override_payload": "msg",
+        "entity_location": "data",
+        "override_data": "msg",
+        "x": 510,
+        "y": 400,
+        "wires": [
+            [],
+            [
+                "867adbd4a5cc61a6"
+            ]
+        ]
+    },
+    {
+        "id": "1152e4be4da030e7",
+        "type": "function",
+        "z": "a68cf5fe47562166",
+        "name": "Motyw Ciemny",
+        "func": "var presetNumber = 4; // Zmiana numeru presetu według potrzeb\nvar aktualnyczas = flow.get(\"CurrentTime\");\n\nmsg.payload = {\n    on : true,\n    ps: presetNumber,\n    seg: [\n        {\n            id: 0,\n            n: aktualnyczas\n        },\n    ]\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 160,
+        "wires": [
+            [
+                "85bd20aebb7534e9"
+            ]
+        ]
+    },
+    {
+        "id": "867adbd4a5cc61a6",
+        "type": "function",
+        "z": "a68cf5fe47562166",
+        "name": "Motyw Ciemny",
+        "func": "// Pobierz poprzednią wartość z kontekstu\nvar poprzedniaWartosc = flow.get(\"PoprzedniaWartosc\");\n\n// Sprawdź, czy msg.payload różni się od poprzedniej wartości\nif (msg.payload !== poprzedniaWartosc) {\n    // Zapisz aktualną wartość jako poprzednią wartość\n    flow.set(\"PoprzedniaWartosc\", msg.payload);\n\n    // Przygotuj dane do przekazania dalej\n    var aktualnyczas = flow.get(\"CurrentTime\");\n    msg.payload = {\n        bri: msg.payload,\n        on: true,\n        seg: [\n            {\n                id: 0,\n                n: aktualnyczas\n            },\n        ]\n    };\n\n    return msg;\n} else {\n    // Jeśli wartość się nie zmieniła, nie przekazuj dalej\n    return null;\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 340,
+        "wires": [
+            [
+                "61cb8b6f9cbc6ad7",
+                "85bd20aebb7534e9"
+            ]
+        ]
+    },
+    {
+        "id": "61cb8b6f9cbc6ad7",
+        "type": "debug",
+        "z": "a68cf5fe47562166",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 950,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "85bd20aebb7534e9",
+        "type": "mqtt out",
+        "z": "a68cf5fe47562166",
+        "name": "WLED MQTT",
+        "topic": "PixelClock/NO1/api",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "ecbb6e3a7cecc487",
+        "x": 920,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "ecbb6e3a7cecc487",
+        "type": "mqtt-broker",
+        "name": "NAS",
+        "broker": "192.168.0.16",
+        "port": "33002",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
     },
     {
         "id": "27907644848a8562",
